@@ -174,8 +174,18 @@
 // }) 
 // 创建服务器，传入请求和响应两个参数
 // 和10.模块化组织代码合并，将9的内容模块化分割成data.js,server.js,并且serverjs里把启动服务器的逻辑写成通用的函数导出，再各自引入到本文件使用
-const data = require('./data')
+// 和11.模块化组织路由合并，解决server.js文件中大量通过ifelse判断路由的问题，本质是将各个路由处理的逻辑封装成函数并且作为一个对象中的各对应键的值，然后通过键值对，由键直接找到值，也就找到了应该用什么路由
+// 文件总共划分以及层级从高到低为index.js(作为入口文件) ==> server.js(创建服务器) ==> route.js（判断使用哪个路由） ==> handler.js(写各个路由具体呈现出怎样的内容，以及怎样呈现)
 const server = require('./server')
+const handler = require('./handler')
 
-server.startServer(JSON.stringify(data.obj))
-console.log('服务器运行在3000端口上')
+let handle = {}
+handle['/'] = handler.home
+handle['/home'] = handler.home
+handle['/api'] = handler.api
+handle['notFound'] = handler.notFound
+
+server.startServer(handle)
+console.log('服务器已经运行在3000端口上')
+
+//12. 使用GET和POST传递数据，转到server.js查看

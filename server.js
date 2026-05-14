@@ -1,19 +1,39 @@
 const http = require('http')
+const router = require('./route')
+const url = require('url')
+const querystring = require('querystring')
 
-const startServer = (data) => {
+const startServer = (handle) => {
     const server = http.createServer((req, res) => {
-        // 写请求头，指定状态码为200代表成功，设置content-type为app.../json代表json类型，此外纯文本用text/plain类型，html用text/html类型
-        res.writeHead(200, {
-            // 告诉服务器该以什么方式解析文本
-            'Content-Type': 'application/json'
+        const pathname = url.parse(req.url).pathname
+        // 12.处理GET请求，获取当前路径中的携带参数的方法,true代表解析
+        // const params = url.parse(req.url,true).query
+        // 处理POST请求
+        let data = []
+        req.on('error', (err) => {
+            console.log(err)
+            // POST发送的是http body，是一种Buffer，将多个Buffer chunk逐个推入data数组
+        }).on('data', (chunk) => {
+            data.push(chunk)
+        }).on('end', () => {
+            // 处理POST请求
+            if(req.method === 'POST') {
+                // 对这个Buffer数组进行拼接形成完整Buffer，再进行字符串转化，就有了最终字符串数据
+                data = Buffer.concat(data).toString()
+                console.log(querystring.parse(data))
+                router.route(pathname, handle, res,querystring.parse(data) )
+            }
+            // 处理GET请求
+            else {
+                const params = url.parse(req.url,true).query
+                router.route(pathname, handle, res, params)
+            }
         })
-
-        // 由于end方法不接收json格式数据，所以用JSON的转字符串方法进行类型转换
-        res.end(JSON.stringify(data))
+        
     })
     server.listen(3000, '127.0.0.1')
 }
 
 module.exports = {
-        startServer: startServer
-    }
+    startServer
+}
