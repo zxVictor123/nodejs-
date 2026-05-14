@@ -102,7 +102,7 @@
 //7.文件读写
 // 读取
 // 先导入文件读写对象
-const fs = require('fs')
+// const fs = require('fs')
 
 // const readMe = fs.readFileSync('./fileExample.txt', 'utf-8')
 
@@ -122,9 +122,9 @@ const fs = require('fs')
 // 8.流和管道
 // 流
 // 使用流的方式读取文件，括号内，前者全局变量查找当前目录路径然后和后续文件名拼接上变为完整路径，所以后面的斜杠/不能省，否则目录名会和文件名直接连到一块，路径名称就出错了，并且txt也不能省，要写完整文件名包括后缀
-const myReadStream = fs.createReadStream(__dirname+'/fileExample.txt','utf-8')
+// const myReadStream = fs.createReadStream(__dirname+'/fileExample.txt','utf-8')
 // 流式方式写入文件，默认先清除掉文件的所有原本内容，再进行写入
-const myWriteStream = fs.createWriteStream(__dirname+'/writeStreamExample1.txt')
+// const myWriteStream = fs.createWriteStream(__dirname+'/writeStreamExample1.txt')
 // a这里是完整读取的方法
 // 注意不要和底下的写入代码一块解开注释，会有冲突
 // let data = ''
@@ -156,4 +156,37 @@ const myWriteStream = fs.createWriteStream(__dirname+'/writeStreamExample1.txt')
 
 // 管道
 // 对读取流使用管道方法，直接将读取到的内容传输进要写入的文件
-myReadStream.pipe(myWriteStream)
+// myReadStream.pipe(myWriteStream)
+
+// 9.web服务器输出内容
+// 读取html文件并写入
+const http = require('http')
+// const fs = require('fs')
+// const myReadStream = fs.createReadStream(__dirname + '/index.html')
+// let number = '1'
+// const server = http.createServer((req, res) => {
+//     console.log(`第${number}次打印request`)
+//     res.writeHead(200, {
+//         'Content-Type': 'text/html'
+//     })
+//     myReadStream.pipe(res)
+//     number++
+// }) 
+// 创建服务器，传入请求和响应两个参数
+const server = http.createServer((req,res) => {
+    // 写请求头，指定状态码为200代表成功，设置content-type为app.../json代表json类型，此外纯文本用text/plain类型，html用text/html类型
+    res.writeHead(200,{
+        // 告诉服务器该以什么方式解析文本
+        'Content-Type': 'application/json'
+    })
+    // 这里定义一个json格式的变量
+    const obj = {
+        name: 'iwen',
+        age: 20
+    }
+    // 由于end方法不接收json格式数据，所以用JSON的转字符串方法进行类型转换
+    res.end(JSON.stringify(obj))
+})
+server.listen(3000, '127.0.0.1')
+
+console.log('服务器运行在3000端口上')
