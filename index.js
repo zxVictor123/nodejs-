@@ -160,7 +160,7 @@
 
 // 9.web服务器输出内容
 // 读取html文件并写入
-const http = require('http')
+// const http = require('http')
 // const fs = require('fs')
 // const myReadStream = fs.createReadStream(__dirname + '/index.html')
 // let number = '1'
@@ -173,20 +173,9 @@ const http = require('http')
 //     number++
 // }) 
 // 创建服务器，传入请求和响应两个参数
-const server = http.createServer((req,res) => {
-    // 写请求头，指定状态码为200代表成功，设置content-type为app.../json代表json类型，此外纯文本用text/plain类型，html用text/html类型
-    res.writeHead(200,{
-        // 告诉服务器该以什么方式解析文本
-        'Content-Type': 'application/json'
-    })
-    // 这里定义一个json格式的变量
-    const obj = {
-        name: 'iwen',
-        age: 20
-    }
-    // 由于end方法不接收json格式数据，所以用JSON的转字符串方法进行类型转换
-    res.end(JSON.stringify(obj))
-})
-server.listen(3000, '127.0.0.1')
+// 和10.模块化组织代码合并，将9的内容模块化分割成data.js,server.js,并且serverjs里把启动服务器的逻辑写成通用的函数导出，再各自引入到本文件使用
+const data = require('./data')
+const server = require('./server')
 
+server.startServer(JSON.stringify(data.obj))
 console.log('服务器运行在3000端口上')
